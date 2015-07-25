@@ -63,6 +63,5 @@
 #Print privilege token
      - name: Print token
        shell: "cat /tmp/token"
-       register: token_out
-       
+       register: token_out     
      - debug: var=token_out
