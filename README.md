@@ -8,7 +8,7 @@ Vagrant configs, weird stuff happening
 * centos
 
 ## Network setup
-### IP List:
+### Internal IP List:
 192.168.33.10 - centos/7 (loki)  
 192.168.33.11 - archlinux  
 192.168.33.12 - debian/7  
