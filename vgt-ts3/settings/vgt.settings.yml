@@ -1,0 +1,15 @@
+#YAML settings file - set vagrant config / spec including port forwarding and bridge device.  
+#Note: This file is also called by the main ansi-ts3.yml for things the like swap recipe which is included as a task, may consolidate in the future.
+
+  name: "ullr"
+  box: "ubuntu/trusty64"
+  mem: "512"
+  vcpu: "1"
+  swap: "1G"
+  ip:  "192.168.33.17"
+  fwdport:
+   host: 9988
+   guest: 9987
+  bridge_int: "enp5s0"
+  bootstrap: "scripts/bootstrap.sh"
+  ts3home: "/home/ts3/teamspeak3-server_linux-amd64"

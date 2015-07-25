@@ -1,0 +1,9 @@
+ts3url: http://teamspeak.gameserver.gamed.de/ts3/releases/3.0.11.3/teamspeak3-server_linux-amd64-3.0.11.3.tar.gz
+ts3file: teamspeak3-server_linux-amd64-3.0.11.3.tar.gz
+ts3userhome: /home/ts3/
+user: ts3
+uid: 501
+gid: 501
+group: ts3
+path: /home/ts3/teamspeak3-server_linux-amd64
+tokenfile: /tmp/token

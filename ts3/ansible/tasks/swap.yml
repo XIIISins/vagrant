@@ -1,0 +1,42 @@
+  - name: check if swap00 exists in /etc/fstab 
+    command: grep -c1 swap00 /etc/fstab
+    register: checkforswap
+    ignore_errors: yes
+
+  - name: check if swap00 is enabled.
+    command: swapon -s |grep swap00 -c1
+    register: swap-enabled
+
+  - stat: path=/mnt/swap00
+    register: swapfile
+ 
+  - name: create the file to be used for swap
+    command: fallocate -l "{{ swap }}" /mnt/swap00
+    when: swapfile.stat.exists != true 
+    sudo: yes
+    ignore_errors: yes
+
+  - name: format the file for swap
+    command: mkswap /mnt/swap00
+    when: checkforswap.rc != 0 
+    ignore_errors: yes
+    sudo: yes
+
+  - name: change swap file permissions
+    file: path=/mnt/swap00 owner=root group=root mode=0600
+    when: checkforswap.rc != 0 
+    ignore_errors: yes
+    sudo: yes
+
+  - name: add the file to the system as a swap file
+    command: swapon /mnt/swap00
+    when: checkforswap.rc != 0 
+    ignore_errors: yes
+    sudo: yes
+ #- debug: var=checkforswap
+
+  - name: write swap entry in fstab
+    mount: name=none src=/mnt/swap00 fstype=swap opts=sw passno=0 dump=0 state=present
+    when: checkforswap.rc != 0 
+    ignore_errors: yes
+    sudo: yes

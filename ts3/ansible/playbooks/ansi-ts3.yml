@@ -1,0 +1,68 @@
+   - name: install TS3 and setup server environment including creation of swap. 
+     hosts: ts3
+     connection: local
+     gather_facts: false
+     vars_files:
+      -  /vagrant/vars/ts3vars.yml
+      -  /vagrant/settings/vgt.settings.yml
+
+     tasks:
+     - include: /vagrant/ansible/tasks/swap.yml
+
+     - stat: path={{ ts3home }}
+       register: ts3home
+
+     - stat: path={{ tokenfile }}
+       register: tokenfile
+
+#setup user and group
+     - name: create ts3 group 
+       action: group name={{ group }} gid={{ gid }}  state=present
+
+     - name: create ts3 user.
+       action: user name={{ user }} uid={{ uid }} group={{ group }} state=present
+
+     - name: get_url
+       get_url: url={{ ts3url }} dest=/home/{{ user }}
+       when: ts3home.stat.exists != true
+
+     - name: unpack ts3 tar file.
+       command: tar -xf {{ ts3file }} chdir=/home/{{ user }}
+       when: ts3home.stat.exists != true
+
+     - name: change permissions on ts3 dir.
+       file: state=directory name={{ path }} owner={{ user }} group={{ group }} 
+
+#copy startup script.
+     - template: src=/vagrant/templates/teamspeak3.conf dest=/etc/init/teamspeak3.conf owner=root group=root mode=0644
+
+#remove unwanted teamspeak tar file.
+     - file: path={{ ts3userhome }}{{ ts3file }} state=absent
+
+#start teamspeak3 service.
+     - service: name=teamspeak3 state=started
+
+#wait for teamspeak to start and log file to generate token.
+     - wait_for: port=10011 delay=10
+       when: tokenfile.stat.exists != true
+
+#Copy token script 
+     - name: Copy token script 
+       copy: >
+         src=/vagrant/scripts/extract_token.sh
+         dest=/home/ts3/extract_token.sh
+         owner=ts3
+         group=ts3
+         mode=0755
+
+#extract privilege token
+     - name: extract privilege token to file.
+       shell: /home/ts3/extract_token.sh
+       when: tokenfile.stat.exists != true
+
+#Print privilege token
+     - name: Print token
+       shell: "cat /tmp/token"
+       register: token_out
+       
+     - debug: var=token_out
