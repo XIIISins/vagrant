@@ -5,7 +5,6 @@
 #
 
 vagrantdir=$HOME/vagrant/autostart
-
 autostart=`find $vagrantdir -type l`
 
 show_help() {
