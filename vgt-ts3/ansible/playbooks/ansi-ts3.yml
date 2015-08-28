@@ -57,11 +57,13 @@
 
 #extract privilege token
      - name: extract privilege token to file.
-       shell: /home/ts3/extract_token.sh
+       script: /home/ts3/extract_token.sh
        when: tokenfile.stat.exists != true
 
 #Print privilege token
      - name: Print token
        shell: cat /tmp/token
        register: token_out
+
+     - name: print stuff
        debug: token_out
